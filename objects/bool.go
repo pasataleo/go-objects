@@ -23,10 +23,13 @@ func (b Bool) Equals(other any) bool {
 	if bOther, ok := other.(Bool); ok {
 		return bOther.value == b.value
 	}
+	if bOther, ok := other.(*Bool); ok {
+		return bOther.value == b.value
+	}
 	return false
 }
 
-func (b Bool) HashCode() int64 {
+func (b Bool) HashCode() uint64 {
 	if b.value {
 		return 1
 	}
