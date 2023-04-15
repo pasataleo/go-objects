@@ -4,6 +4,11 @@ type Iterable[T any] interface {
 	Iterator() Iterator[T]
 }
 
+type IterableObject[T any] interface {
+	Object
+	Iterable[T]
+}
+
 type Iterator[T any] interface {
 	HasNext() bool
 	Next() T
