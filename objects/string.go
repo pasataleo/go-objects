@@ -1,25 +1,27 @@
 package objects
 
+import "encoding/json"
+
 var (
-	_ Object             = (*String)(nil)
-	_ Comparable[String] = (*String)(nil)
+	_ Object              = (*String)(nil)
+	_ Comparable[*String] = (*String)(nil)
 )
 
 type String struct {
 	value string
 }
 
-func WrapString(value string) String {
-	return String{
+func WrapString(value string) *String {
+	return &String{
 		value: value,
 	}
 }
 
-func (s String) Unwrap() string {
+func (s *String) Unwrap() string {
 	return s.value
 }
 
-func (s String) CompareTo(other String) int {
+func (s *String) CompareTo(other *String) int {
 	switch {
 	case s.value < other.value:
 		return -1
@@ -30,7 +32,7 @@ func (s String) CompareTo(other String) int {
 	}
 }
 
-func (s String) Equals(other any) bool {
+func (s *String) Equals(other any) bool {
 	if sOther, ok := other.(String); ok {
 		return sOther.value == s.value
 	}
@@ -42,10 +44,18 @@ func (s String) Equals(other any) bool {
 	return false
 }
 
-func (s String) HashCode() uint64 {
+func (s *String) HashCode() uint64 {
 	return hashFromString(s)
 }
 
-func (s String) ToString() string {
+func (s *String) String() string {
 	return s.value
+}
+
+func (s *String) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.value)
+}
+
+func (s *String) UnmarshalJSON(bytes []byte) error {
+	return json.Unmarshal(bytes, &s.value)
 }

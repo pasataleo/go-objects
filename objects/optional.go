@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/pasataleo/go-errors/errors"
@@ -12,87 +13,82 @@ type Optional[V any] interface {
 	Get() V
 	GetSafe() (V, error)
 
-	Empty() bool
+	IsEmpty() bool
 }
 
 func EmptyOptional[V Object]() Optional[V] {
-	return EmptyOptionalT(ObjectIdentityConverter[V]())
-}
-
-func EmptyOptionalT[V any](converter ObjectConverter[V]) Optional[V] {
-	return optional[V]{
-		empty:     true,
-		converter: converter,
+	return &optional[V]{
+		Empty: true,
 	}
 }
 
 func OptionalOf[V Object](value V) Optional[V] {
-	return OptionalOfT(value, ObjectIdentityConverter[V]())
-}
-
-func OptionalOfT[V Object](value V, converter ObjectConverter[V]) Optional[V] {
-	return optional[V]{
-		empty:     false,
-		value:     value,
-		converter: converter,
+	return &optional[V]{
+		Value: value,
 	}
 }
 
-type optional[V any] struct {
-	empty bool
-	value V
-
-	converter ObjectConverter[V]
+type optional[V Object] struct {
+	Empty bool `json:"empty"`
+	Value V    `json:"value,omitempty"`
 }
 
-func (optional optional[V]) Equals(other any) bool {
+func (optional *optional[V]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(optional)
+}
+
+func (optional *optional[V]) UnmarshalJSON(bytes []byte) error {
+	return json.Unmarshal(bytes, optional)
+}
+
+func (optional *optional[V]) Equals(other any) bool {
 	if oOptional, ok := other.(Optional[V]); ok {
-		if oOptional.Empty() != optional.Empty() {
+		if oOptional.IsEmpty() != optional.IsEmpty() {
 			return false
 		}
 
-		if optional.empty {
+		if optional.Empty {
 			// If neither optional has values, then they are equal.
 			return true
 		}
 
-		return optional.converter.Equals(optional.Get(), oOptional.Get())
+		return optional.Get().Equals(oOptional.Get())
 	}
 	return false
 }
 
-func (optional optional[V]) HashCode() uint64 {
-	if optional.empty {
+func (optional *optional[V]) HashCode() uint64 {
+	if optional.Empty {
 		return 0
 	}
 
-	return optional.converter.HashCode(optional.value)
+	return optional.Value.HashCode()
 }
 
-func (optional optional[V]) ToString() string {
-	if optional.empty {
+func (optional *optional[V]) String() string {
+	if optional.Empty {
 		return "optional(empty)"
 	}
 
-	return fmt.Sprintf("optional(%s)", optional.converter.ToString(optional.value))
+	return fmt.Sprintf("optional(%s)", optional.Value.String())
 }
 
-func (optional optional[V]) Get() V {
-	if optional.empty {
+func (optional *optional[V]) Get() V {
+	if optional.Empty {
 		panic("called Get() on empty Optional")
 	}
 
-	return optional.value
+	return optional.Value
 }
 
-func (optional optional[V]) GetSafe() (V, error) {
-	if optional.empty {
-		return optional.value, errors.New(nil, ErrorCodeNotPresent, "empty")
+func (optional *optional[V]) GetSafe() (V, error) {
+	if optional.Empty {
+		return optional.Value, errors.New(nil, ErrorCodeNotPresent, "empty")
 	}
 
-	return optional.value, nil
+	return optional.Value, nil
 }
 
-func (optional optional[V]) Empty() bool {
-	return optional.empty
+func (optional *optional[V]) IsEmpty() bool {
+	return optional.Empty
 }

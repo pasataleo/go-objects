@@ -1,2 +1,6 @@
 github.com/pasataleo/go-errors v0.1.2 h1:uOC1pxiZLRLOnExT8utYh032/YcZyAovCbttZhUniPo=
 github.com/pasataleo/go-errors v0.1.2/go.mod h1:tk/Ac7UOe8MdTMHxRKRbVwSKmBq8A6d/HGQJ0NII/yQ=
+github.com/pasataleo/objects/go v0.0.0-20240325192043-f75ab154583c h1:CNnTpfqh/z43NgIeyJ2ye77eloQa3k3BoluQphEkK1w=
+github.com/pasataleo/objects/go v0.0.0-20240325192043-f75ab154583c/go.mod h1:2swlzsVix0/GX+T7F/Pf7Dx0kn/a7YWzDKucScnBI0k=
+google.golang.org/protobuf v1.33.0 h1:uNO2rsAINq/JlFpSdYEKIZ0uKD/R9cpdv0T+yoGwGmI=
+google.golang.org/protobuf v1.33.0/go.mod h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHhKbcUYpos=
