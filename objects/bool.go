@@ -8,6 +8,9 @@ import (
 var _ Object = (*Bool)(nil)
 var _ Comparable[*Bool] = (*Bool)(nil)
 
+var True = WrapBool(true)
+var False = WrapBool(false)
+
 type Bool struct {
 	value bool
 }
